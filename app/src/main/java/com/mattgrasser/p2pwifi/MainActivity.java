@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void connectToPeer() {
         // Connect to the selected device
-        mStatusText.setText("Connecting to device...");
+        mStatusText.append("Connecting to device...\n");
         String deviceKey = (String) mDevices.getSelectedItem();
         final WifiDirectDevice device = mGoodDevices.get(deviceKey);
 
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onSuccess() {
-                mStatusText.setText("Connected via WiFi!");
+                mStatusText.append("Connected via WiFi!\n");
                 // BroadcastReceiver will note when the connection changes in WIFI_P2P_PEERS_CHANGED_ACTION
             }
 
@@ -195,11 +195,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // If we don't have an address, validate that a device is selected and a message has been entered
         if (mRecipientAddress == null) {
             if (mDevices.getSelectedItem() == null) {
-                mStatusText.setText("Please select a device to message.");
+                mStatusText.append("Please select a device to message.\n");
                 return;
             }
             if (mMessage.getText() == null || mMessage.getText().toString().equals("")) {
-                mStatusText.setText("Please enter a message to send.");
+                mStatusText.append("Please enter a message to send.\n");
                 return;
             }
         }
@@ -271,11 +271,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 reason = "General error";
                 break;
         }
-        mStatusText.setText("Connection failed, reason: " + reason);
+        mStatusText.append("Connection failed, reason: " + reason + "\n");
     }
 
     public void onWifiP2pStateChange(boolean isEnabled) {
-        mStatusText.setText("P2P WiFi is enabled: " + isEnabled);
+        mStatusText.append("P2P WiFi is enabled: " + isEnabled + "\n");
         if (isEnabled) {
             // Check if we have a group
             mManager.requestGroupInfo(mChannel, new WifiDirectGroupInfoListener(mManager, mChannel, this));
@@ -312,10 +312,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onGroupCreateResult(int result) {
         if (result < 0) { // success
-            mStatusText.append("(group is created)");
+            mStatusText.append("(group is created)\n");
         } else {
             onFailureReasonCode(result);
-            mStatusText.append("(group create failed)");
+            mStatusText.append("(group create failed)\n");
         }
     }
 }

@@ -77,7 +77,7 @@ class WifiDirectServerAsyncTask extends AsyncTask<Void, Void, String> {
     protected void onPostExecute(String result) {
         if (result != null) {
             // Display text and restart the server
-            statusText.setText(result);
+            statusText.append(result + "\n");
             Log.d(TAG, "Restarting server...");
             new WifiDirectServerAsyncTask(mainActivity, manager, channel, statusText).execute();
         }

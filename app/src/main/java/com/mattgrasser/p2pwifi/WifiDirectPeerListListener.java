@@ -41,7 +41,7 @@ class WifiDirectPeerListListener implements WifiP2pManager.PeerListListener {
             // Present the values for selection
             mainActivity.mDevices.setAdapter(adapter);
         } else {
-            mainActivity.mStatusText.setText("No compatible devices found.");
+            mainActivity.mStatusText.append("No compatible devices found.\n");
         }
     }
 }

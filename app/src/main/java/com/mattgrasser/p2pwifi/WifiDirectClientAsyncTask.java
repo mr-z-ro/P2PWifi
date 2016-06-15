@@ -93,9 +93,9 @@ class WifiDirectClientAsyncTask extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         if (result != null) {
-            mainActivity.mStatusText.setText(result);
+            mainActivity.mStatusText.append(result + "\n");
         } else {
-            mainActivity.mStatusText.setText("Error sending message!");
+            mainActivity.mStatusText.append("Error sending message!\n");
         }
     }
 }
