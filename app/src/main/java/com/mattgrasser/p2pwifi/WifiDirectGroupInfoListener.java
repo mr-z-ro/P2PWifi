@@ -19,24 +19,23 @@ class WifiDirectGroupInfoListener implements WifiP2pManager.GroupInfoListener {
     }
 
     @Override
+
     public void onGroupInfoAvailable(WifiP2pGroup wifiP2pGroup) {
         if (wifiP2pGroup != null) {
-            Log.d(TAG, "Group info available: " + wifiP2pGroup.toString());
-            mainActivity.mStatusText.append("Group info available: " + wifiP2pGroup.toString() + "\n");
-            mainActivity.onGroupCreateResult(-1);
+            mainActivity.logEvent(TAG, "[Group Created]:\n " + wifiP2pGroup.toString());
         } else if (mainActivity.mIsGO) {
-            Log.d(TAG, "Group info is not available (is null)! Creating now.");
-            mainActivity.mStatusText.append("Group info is not available (is null)! Creating now.\n");
+            mainActivity.logEvent(TAG, "Group info is not available (is null)! Creating now.");
+
             // Create a group
             manager.createGroup(channel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
-                    mainActivity.onGroupCreateResult(-1);
+                    mainActivity.logEvent(TAG, "Group creation re-initiation successful.");
                 }
 
                 @Override
                 public void onFailure(int reasonCode) {
-                    mainActivity.onGroupCreateResult(reasonCode);
+                    mainActivity.logEvent(TAG, "Group creation failed:" + reasonCode);
                 }
             });
         }

@@ -21,6 +21,7 @@ class WifiDirectClientAsyncTask extends AsyncTask<Void, Void, String> {
     String msg;
     Socket socket;
     byte buf[];
+    boolean errorOccurred;
 
     private MainActivity mainActivity;
 
@@ -30,13 +31,20 @@ class WifiDirectClientAsyncTask extends AsyncTask<Void, Void, String> {
         this.msg = msg;
         this.socket = new Socket();
         this.buf = new byte[1024];
+        this.errorOccurred = false;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        mainActivity.logEvent(TAG, "Connecting to " + host + ":" + WifiDirectUtilities.PORT);
     }
 
     @Override
     protected String doInBackground(Void... voids) {
         // for debug worker thread
-        if (android.os.Debug.isDebuggerConnected())
-            android.os.Debug.waitForDebugger();
+        //if (android.os.Debug.isDebuggerConnected())
+        //    android.os.Debug.waitForDebugger();
 
         Log.d(TAG, "Connecting to " + host + ":" + WifiDirectUtilities.PORT);
 
@@ -66,7 +74,8 @@ class WifiDirectClientAsyncTask extends AsyncTask<Void, Void, String> {
             return "Successfully sent! (message: " + this.msg + ")";
         } catch (Exception e) {
             Log.e(MainActivity.TAG, e.getMessage());
-            return null;
+            this.errorOccurred = true;
+            return "Could not send because of " + e.getMessage();
         }
 
         /**
@@ -74,15 +83,17 @@ class WifiDirectClientAsyncTask extends AsyncTask<Void, Void, String> {
          * transferring or if an exception occurred.
          */
         finally {
-            if (socket != null) {
-                if (socket.isConnected()) {
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
-                        Log.e(MainActivity.TAG, e.getMessage());
-                        return null;
-                    }
-                }
+            if (socket == null || !socket.isConnected()) {
+                this.errorOccurred = true;
+                return "Socket was either null or not connected and could not be closed";
+            }
+
+            try {
+                socket.close();
+            } catch (IOException e) {
+                Log.e(MainActivity.TAG, e.getMessage());
+                this.errorOccurred = true;
+                return "Socket couldn't be closed: " + e.getMessage();
             }
         }
     }
@@ -92,10 +103,11 @@ class WifiDirectClientAsyncTask extends AsyncTask<Void, Void, String> {
      */
     @Override
     protected void onPostExecute(String result) {
-        if (result != null) {
-            mainActivity.mStatusText.append(result + "\n");
+        if (!this.errorOccurred) {
+            mainActivity.logEvent(TAG, result);
         } else {
-            mainActivity.mStatusText.append("Error sending message!\n");
+            mainActivity.logEvent(TAG, "Error sending message: " + result);
+            this.errorOccurred = false; // in case of reuse
         }
     }
 }

@@ -25,7 +25,8 @@ class WifiDirectDnsSdListener implements WifiP2pManager.DnsSdTxtRecordListener, 
          */
 
     public void onDnsSdTxtRecordAvailable(String fullDomain, Map record, WifiP2pDevice device) {
-        Log.d(TAG, "DnsSdTxtRecord available: " + record.toString()  + " at " + fullDomain);
+        mainActivity.logEvent(TAG, "DnsSdTxtRecord available: " + record.toString()  + " at " + fullDomain);
+
         mainActivity.mServiceDevices = new HashMap<String, WifiDirectDevice>();
 
         WifiDirectDevice wDevice = new WifiDirectDevice(device);
@@ -51,6 +52,6 @@ class WifiDirectDnsSdListener implements WifiP2pManager.DnsSdTxtRecordListener, 
         String[] spinnerArray = new String[mainActivity.mServiceDevices.size()];
         mainActivity.mServiceDevices.keySet().toArray(spinnerArray);
 
-        Log.d(TAG, "onBonjourServiceAvailable " + instanceName);
+        mainActivity.logEvent(TAG, "onBonjourServiceAvailable " + instanceName);
     }
 }

@@ -83,16 +83,28 @@
             android:text="" />
     </ScrollView>
 
+    <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+    <LinearLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="0px"
+        android:layout_height="0px"/>
+
     <LinearLayout
         android:id="@+id/messageHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true">
+
+        <!-- :nextFocusUp and :nextFocusLeft have been set to the id of this component
+to prevent the dummy from receiving focus again -->
         <EditText
             android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:nextFocusUp="@id/message"
+            android:nextFocusLeft="@id/message"
             android:lines="1"
             android:hint="Type Message Here"
             android:visibility="visible"

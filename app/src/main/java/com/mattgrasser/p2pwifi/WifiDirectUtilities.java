@@ -80,4 +80,28 @@ class WifiDirectUtilities {
             e.printStackTrace();
         }
     }
+
+    public static String getFailureReasonMessage(int reasonCode) {
+        String reason = "Unknown";
+        switch (reasonCode) {
+            case WifiP2pManager.P2P_UNSUPPORTED:
+                reason = "P2P not supported on device";
+                break;
+            case WifiP2pManager.BUSY:
+                reason = "Busy";
+                break;
+            case WifiP2pManager.ERROR:
+                reason = "General error";
+                break;
+        }
+        return reason;
+    }
+
+    public static String getAutomatedResponse(String result) {
+        if (result.equals("Marco")) {
+            return "Polo";
+        }
+
+        return null;
+    }
 }

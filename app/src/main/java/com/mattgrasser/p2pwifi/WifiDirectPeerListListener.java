@@ -22,11 +22,19 @@ class WifiDirectPeerListListener implements WifiP2pManager.PeerListListener {
     public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceList) {
         // Look for p2p devices available
         Log.d(TAG, wifiP2pDeviceList.toString());
-        mainActivity.mGoodDevices = new HashMap();
-        for (WifiP2pDevice device : wifiP2pDeviceList.getDeviceList()) {
-            WifiDirectDevice wDevice = new WifiDirectDevice(device);
-            if (device.isServiceDiscoveryCapable()) {
-                mainActivity.mGoodDevices.put(device.deviceName + "(" + device.deviceAddress + ")", wDevice);
+
+        if (mainActivity.mGoodDevices == null) {
+            mainActivity.mGoodDevices = new HashMap();
+        } else {
+            mainActivity.mGoodDevices.clear();
+        }
+
+        if (wifiP2pDeviceList != null) {
+            for (WifiP2pDevice device : wifiP2pDeviceList.getDeviceList()) {
+                WifiDirectDevice wDevice = new WifiDirectDevice(device);
+                if (device.isServiceDiscoveryCapable()) {
+                    mainActivity.mGoodDevices.put(device.deviceName + "(" + device.deviceAddress + ")", wDevice);
+                }
             }
         }
 
@@ -35,7 +43,7 @@ class WifiDirectPeerListListener implements WifiP2pManager.PeerListListener {
             // Prepare Device values for the array
             String[] spinnerArray = new String[mainActivity.mGoodDevices.size()];
             mainActivity.mGoodDevices.keySet().toArray(spinnerArray);
-            ArrayAdapter<String> adapter =new ArrayAdapter<String>(mainActivity,android.R.layout.simple_spinner_item, spinnerArray);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mainActivity,android.R.layout.simple_spinner_item, spinnerArray);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
             // Present the values for selection

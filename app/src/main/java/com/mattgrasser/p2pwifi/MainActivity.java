@@ -126,8 +126,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void connectToPeer() {
         // Connect to the selected device
         mStatusText.append("Connecting to device...\n");
+
         String deviceKey = (String) mDevices.getSelectedItem();
         final WifiDirectDevice device = mGoodDevices.get(deviceKey);
+        if (device == null) {
+            mStatusText.append("Device no longer exists, refreshing peers...\n");
+            discoverPeers();
+            return;
+        }
 
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
@@ -168,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(int reasonCode) {
-                onFailureReasonCode(reasonCode);
+                logEvent(TAG, WifiDirectUtilities.getFailureReasonMessage(reasonCode));
             }
         });
     }
@@ -177,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mManager.removeGroup(mChannel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                Log.d(TAG, "removeGroup success");
+                logEvent(TAG, "removeGroup success");
                 WifiDirectUtilities.deletePersistentGroups(mManager, mChannel);
                 mRecipientAddress = null;
                 mGoodDevices = null;
@@ -186,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(int reason) {
-                Log.d(TAG, "removeGroup fail: " + reason);
+                logEvent(TAG, "removeGroup fail: " + reason);
             }
         });
     }
@@ -224,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onFailure(int reasonCode) {
-                        onFailureReasonCode(reasonCode);
+                        logEvent(TAG, WifiDirectUtilities.getFailureReasonMessage(reasonCode));
                     }
                 });
     }
@@ -239,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onFailure(int reasonCode) {
-                        onFailureReasonCode(reasonCode);
+                        logEvent(TAG, WifiDirectUtilities.getFailureReasonMessage(reasonCode));
                     }
                 }
         );
@@ -252,26 +258,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onFailure(int reasonCode) {
-                        onFailureReasonCode(reasonCode);
+                        logEvent(TAG, WifiDirectUtilities.getFailureReasonMessage(reasonCode));
                     }
                 }
         );
-    }
-
-    private void onFailureReasonCode(int reasonCode) {
-        String reason = "Unknown";
-        switch (reasonCode) {
-            case WifiP2pManager.P2P_UNSUPPORTED:
-                reason = "P2P not supported on device";
-                break;
-            case WifiP2pManager.BUSY:
-                reason = "Busy";
-                break;
-            case WifiP2pManager.ERROR:
-                reason = "General error";
-                break;
-        }
-        mStatusText.append("Connection failed, reason: " + reason + "\n");
     }
 
     public void onWifiP2pStateChange(boolean isEnabled) {
@@ -310,12 +300,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mManager.setDnsSdResponseListeners(mChannel, listener, listener);
     }
 
-    public void onGroupCreateResult(int result) {
-        if (result < 0) { // success
-            mStatusText.append("(group is created)\n");
-        } else {
-            onFailureReasonCode(result);
-            mStatusText.append("(group create failed)\n");
-        }
+    public void logEvent(String tag, String msg) {
+        Log.d(tag, msg);
+        this.mStatusText.append(msg + "\n");
     }
 }
